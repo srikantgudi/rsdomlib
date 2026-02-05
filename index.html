@@ -3,13 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Rust Wasm DOM Handling App</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 
 </head>
 <body class="mx-30 w-auto">
-    <div class="text-4xl font-bold">** WASM DOM APP **</div>
-    <div id="msg" class="my-2">??</div>
+    <div class="text-4xl font-bold my-4">** RUST WASM DOM APP **</div>
+    <div class="my-2">
+        Default message:
+        <span class="border border-teal-600 rounded p-1" id="msg"></span>
+    </div>
     <div class="my-2">
         Enter: message: <input id="messageid" class="p-1 border rounded-sm"  type="text" placeholder="message..." oninput="setInputVal(this.value)" />
     </div>
@@ -17,6 +20,7 @@
         <button class="border my-2 rounded-sm p-1 hover:bg-gray-200" onclick="defaultmessage()">Default message</button>
         <button class="border my-2 rounded-sm p-1 hover:bg-gray-200" onclick="custommessage()">Custom message</button>
     </div>
+    
     <div class="my-2">
         Select Zone:
         <select id="zone" class="p-1 border rounded-sm" onchange="greeting(this.value);setZone(this.value)">
@@ -31,7 +35,9 @@
         </select>
         <button class="border my-2 rounded-sm p-1 hover:bg-gray-200" onclick="updateZoneTime()">Update zone time</button>
     </div>
-    <div class="my-2" id="ztime">-- ztime here --</div>
+    <div class="my-2 w-200 border border-teal-600 rounded-sm p-1">
+        Zone Time :: <span id="ztime" class="p-1 font-bold italic px-2 ring-2 ring-blue-500 rounded-sm">-- ztime here --</span>
+    </div> 
 
 
     <script type="module">
