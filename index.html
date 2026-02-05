@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+</head>
+<body class="mx-30 w-auto">
+    <div class="text-4xl font-bold">** WASM DOM APP **</div>
+    <div id="msg" class="my-2">??</div>
+    <div class="my-2">
+        Enter: message: <input id="messageid" class="p-1 border rounded-sm"  type="text" placeholder="message..." oninput="setInputVal(this.value)" />
+    </div>
+    <div class="my-2">
+        <button class="border my-2 rounded-sm p-1 hover:bg-gray-200" onclick="defaultmessage()">Default message</button>
+        <button class="border my-2 rounded-sm p-1 hover:bg-gray-200" onclick="custommessage()">Custom message</button>
+    </div>
+    <div class="my-2">
+        Select Zone:
+        <select id="zone" class="p-1 border rounded-sm" onchange="greeting(this.value);setZone(this.value)">
+            <option value="">- Select -</option>
+            <option value="America/Los_Angeles">Los Angeles</option>
+            <option value="America/New_York">New York</option>
+            <option value="Europe/London">London</option>
+            <option value="Europe/Paris">Paris</option>
+            <option value="Europe/Moscow">Moscow</option>
+            <option value="Asia/Kolkata">India</option>
+            <option value="Asia/Tokyo">Japan</option>
+        </select>
+        <button class="border my-2 rounded-sm p-1 hover:bg-gray-200" onclick="updateZoneTime()">Update zone time</button>
+    </div>
+    <div class="my-2" id="ztime">-- ztime here --</div>
+
+
+    <script type="module">
+        import init, { 
+            hello, set_message, set_zone_time
+        } from './pkg/rsdomlib.js';
+
+        let zone = '';
+        let inputval = '';
+
+        window.setInputVal = function(val) {
+            inputval = val;
+        }
+
+        window.defaultmessage = function() {
+            hello("msg");
+        }
+        window.setZone = function(val) {
+            zone = val;
+        }
+        window.custommessage = function() {
+            set_message("msg", (inputval || "nothing") + "...modified");
+        }
+
+        window.updateZoneTime = function() {
+            if (zone) {
+                set_zone_time("ztime", zone);
+            } else {
+                set_zone_time("ztime", '-- Select a zone --');
+            }
+        }
+
+        window.greeting = function(inputval) {
+            set_message("msg", inputval);
+        }
+        
+        init().then(() => {
+            hello("msg");
+        });
+    </script>
+</body>
+</html>

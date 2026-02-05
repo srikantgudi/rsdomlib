@@ -1,0 +1,27 @@
+[package]
+name = "rsdomlib"
+version = "0.1.0"
+edition = "2024"
+
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+js-sys = "0.3.85"
+wasm-bindgen = "0.2.108"
+chrono = { version = "0.4", features = ["wasmbind", "serde"] }
+chrono-tz = "0.8"
+serde = { version = "1.0", features = ["derive"] }
+serde-wasm-bindgen = "0.6"
+web-sys = { version = "0.3", features = [
+    "Window",
+    "Document",
+    "Element",
+    "HtmlElement",
+    "Node",
+    "console",
+    "HtmlInputElement",
+    "HtmlSelectElement",
+    "HtmlTextAreaElement"
+]}
