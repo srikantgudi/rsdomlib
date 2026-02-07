@@ -10,7 +10,7 @@
 <body class="mx-30 w-auto">
     <div class="text-4xl font-bold my-4">** RUST WASM DOM APP **</div>
     <div class="my-2">
-        Default message:
+        <span id="msgtype">*DEFAULT MESSAGE* : </span>
         <span class="border border-teal-600 rounded p-1" id="msg"></span>
     </div>
     <div class="my-2">
@@ -21,60 +21,80 @@
         <button class="border my-2 rounded-sm p-1 hover:bg-gray-200" onclick="custommessage()">Custom message</button>
     </div>
     
-    <div class="my-2">
-        Select Zone:
-        <select id="zone" class="p-1 border rounded-sm" onchange="greeting(this.value);setZone(this.value)">
-            <option value="">- Select -</option>
-            <option value="America/Los_Angeles">Los Angeles</option>
-            <option value="America/New_York">New York</option>
-            <option value="Europe/London">London</option>
-            <option value="Europe/Paris">Paris</option>
-            <option value="Europe/Moscow">Moscow</option>
-            <option value="Asia/Kolkata">India</option>
-            <option value="Asia/Tokyo">Japan</option>
-        </select>
-        <button class="border my-2 rounded-sm p-1 hover:bg-gray-200" onclick="updateZoneTime()">Update zone time</button>
+    <div class="flex gap-12">
+        <div class="my-2">
+            <div>Select Zone:</div>
+            <select id="idselectzone" class="p-1 border rounded-sm" onchange="updateZoneTime()">
+                <option value="">- Select -</option>
+            </select>
+        </div>
+        <!-- clock -->
+        <div>
+            <div class="my-2 w-200 border border-teal-600 rounded-sm p-1">
+                <span id="idzonetime" class="p-1 font-bold italic px-2 ring-2 ring-blue-500 rounded-sm">-- ztime here --</span>
+            </div> 
+            <div id="clock">
+                <svg viewBox="-50 -50 100 100" width="500">
+                    <circle id="face" r="49" fill="lightcyan" stroke="lightblue" />
+                    <circle id="face-inner" r="9" fill="cornflowerblue" />
+                    <line id="thr" x1="-4" x2="30" stroke="navy" stroke-linecap="round" transform="rotate(-150)" />
+                    <line id="tmi" x1="-4" x2="40" stroke="navy" stroke-linecap="round" transform="rotate(-30)" />
+                </svg>
+            </div>
+        </div>
     </div>
-    <div class="my-2 w-200 border border-teal-600 rounded-sm p-1">
-        Zone Time :: <span id="ztime" class="p-1 font-bold italic px-2 ring-2 ring-blue-500 rounded-sm">-- ztime here --</span>
-    </div> 
 
 
     <script type="module">
         import init, { 
-            hello, set_message, set_zone_time
+            hello, set_message, set_zone_time, set_elem_value
         } from './pkg/rsdomlib.js';
 
-        let zone = '';
         let inputval = '';
+
+        const elemId = (id) => document.getElementById(id);
 
         window.setInputVal = function(val) {
             inputval = val;
         }
 
         window.defaultmessage = function() {
+            elemId("msgtype").textContent = "*DEFAULT MESSAGE*";
             hello("msg");
         }
-        window.setZone = function(val) {
-            zone = val;
-        }
         window.custommessage = function() {
+            elemId("msgtype").textContent = "*CUSTOM MESSAGE*";
             set_message("msg", (inputval || "nothing") + "...modified");
         }
 
         window.updateZoneTime = function() {
-            if (zone) {
-                set_zone_time("ztime", zone);
-            } else {
-                set_zone_time("ztime", '-- Select a zone --');
+            let zoneselected = elemId('idselectzone').value;
+            if (!zoneselected) {
+                set_message("idzonetime", "Please select a timezone");
+                return;
             }
+            set_zone_time("idzonetime", zoneselected);
         }
 
         window.greeting = function(inputval) {
             set_message("msg", inputval);
         }
-        
+
+        window.addOption = function(selectId, optionValue) {
+            let opt = document.createElement("option");
+            opt.value = optionValue;
+            opt.text = optionValue;
+            elemId(selectId).appendChild(opt);
+        }
+
         init().then(() => {
+            if (Intl.supportedValuesOf) {
+                const timezones = Intl.supportedValuesOf('timeZone');
+                timezones.forEach(tz => {
+                    addOption('idselectzone', tz);
+                });
+                elemId("idselectzone").setAttribute('size',25);
+            }
             hello("msg");
         });
     </script>

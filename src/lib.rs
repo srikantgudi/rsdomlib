@@ -1,10 +1,12 @@
+use serde::de::value;
 use wasm_bindgen::prelude::*;
 use wasm_bindgen::JsValue;
-use web_sys::{HtmlElement};
 use chrono::{Local, Timelike};
 use chrono_tz::Tz;
 use serde_wasm_bindgen::to_value;
 use serde::Serialize;
+
+use crate::dom::{elem, get_element};
 
 mod dom;
 
@@ -115,21 +117,58 @@ pub fn short_datetime() -> String {
     now.format("%H:%M:%S %Z").to_string()
 }
 
+#[wasm_bindgen]
+pub fn set_elem_value(elem_id: String, value: String) -> Result<(), JsValue> {
+    elem(&elem_id)?.set_inner_html(&value);
+    Ok(())
+}
 
-// let utc_now = Utc::now();
-// let hr_angle = (zone_now.hour() as f32 * 30.0) + (zone_now.minute() as f32 / 2.0) - 90.0;
-// let mi_angle = (zone_now.minute() as f32 * 6.0 + zone_now.second() as f32 / 10.0) - 90.0;
-// let se_angle = (zone_now.second() as f32 * 6.0) - 90.0;
+
 #[wasm_bindgen]
 pub fn set_zone_time(elem_id: String, zone_str: String) -> Result<(), JsValue> {
+    if zone_str.is_empty() {
+        return set_message(elem_id, "Please select a timezone".to_string());
+    }
+    
     match zone_str.parse::<Tz>() {
         Ok(tz) => {
             let zone_now = Local::now().with_timezone(&tz);
+            let hr_angle = (zone_now.hour() as f32 * 30.0) + (zone_now.minute() as f32 / 2.0) - 90.0;
+            let mi_angle = (zone_now.minute() as f32 * 6.0 + zone_now.second() as f32 / 10.0) - 90.0;
             let datetime = zone_now.format("%A %d %B %Y %I:%M:%S %p %Z").to_string();
-            set_message(elem_id, format!("Time in {} = {}", zone_str, datetime))?;
+            
+            // Set the time display
+            if let Err(e) = set_elem_value(elem_id.clone(), format!("{}: {}", zone_str, datetime)) {
+                web_sys::console::log_1(&format!("Error setting value: {:?}", e).into());
+                return Err(e);
+            }
+            
+            // Set hour hand rotation
+            match elem("thr") {
+                Ok(el) => {
+                    if let Err(e) = el.set_attribute("transform", &format!("rotate({})", hr_angle)) {
+                        web_sys::console::log_1(&format!("Error setting thr transform: {:?}", e).into());
+                    }
+                }
+                Err(e) => {
+                    web_sys::console::log_1(&format!("Element thr not found: {:?}", e).into());
+                }
+            }
+            
+            // Set minute hand rotation
+            match elem("tmi") {
+                Ok(el) => {
+                    if let Err(e) = el.set_attribute("transform", &format!("rotate({})", mi_angle)) {
+                        web_sys::console::log_1(&format!("Error setting tmi transform: {:?}", e).into());
+                    }
+                }
+                Err(e) => {
+                    web_sys::console::log_1(&format!("Element tmi not found: {:?}", e).into());
+                }
+            }
         }
         Err(_) => {
-            set_message(elem_id, format!("Invalid timezone"))?;
+            let _ = set_message(elem_id, "Invalid timezone".to_string());
         }
     }
 

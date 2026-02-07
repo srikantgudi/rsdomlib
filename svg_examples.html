@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG from WASM Example</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f0f0f0;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: #333;
+        }
+        svg {
+            border: 2px solid #ccc;
+            background-color: #fafafa;
+            display: block;
+            margin: 10px 0;
+        }
+        .description {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>SVG Creation from WASM - Examples</h1>
+    
+    <div class="container">
+        <h2>Example 1: Basic Shapes</h2>
+        <div class="description">Circle, Rectangle, and Line in a 400x300 SVG</div>
+        <div id="example1"></div>
+    </div>
+
+    <div class="container">
+        <h2>Example 2: Styled Circle</h2>
+        <div class="description">Custom colored circle with border</div>
+        <div id="example2"></div>
+    </div>
+
+    <div class="container">
+        <h2>Example 3: Text and Shapes</h2>
+        <div class="description">SVG with text overlay on geometric shapes</div>
+        <div id="example3"></div>
+    </div>
+
+    <script type="module">
+        import init, { 
+            create_svg_element, 
+            add_svg_circle, 
+            add_svg_rect, 
+            add_svg_line,
+            add_svg_text,
+            set_svg_attr
+        } from './pkg/rsdomlib.js';
+
+        async function main() {
+            console.log("Initializing WASM...");
+            await init();
+            console.log("WASM initialized!");
+            
+            // Example 1: Basic Shapes
+            try {
+                console.log("Creating Example 1...");
+                create_svg_element("example1", 400, 300);
+                
+                // Add rectangle background
+                add_svg_rect("rsdomlib-svg", 20, 20, 360, 260, "#e8f4f8", "#2c3e50", 2);
+                
+                // Add circle
+                add_svg_circle("rsdomlib-svg", 100, 80, 40, "#e74c3c", "#c0392b", 3);
+                
+                // Add rectangle
+                add_svg_rect("rsdomlib-svg", 200, 40, 120, 80, "#3498db", "#2980b9", 2);
+                
+                // Add line
+                add_svg_line("rsdomlib-svg", 50, 200, 350, 200, "#2ecc71", 3);
+            } catch (e) {
+                console.error("Error in Example 1:", e);
+            }
+
+            // Example 2: Styled Circle
+            try {
+                console.log("Creating Example 2...");
+                create_svg_element("example2", 300, 300);
+                
+                // Background
+                add_svg_rect("rsdomlib-svg", 0, 0, 300, 300, "#fff9e6", "#f39c12", 2);
+                
+                // Large circle
+                add_svg_circle("rsdomlib-svg", 150, 150, 100, "#9b59b6", "#8e44ad", 4);
+                
+                // Smaller circle
+                add_svg_circle("rsdomlib-svg", 150, 150, 60, "#ecf0f1", "#95a5a6", 2);
+            } catch (e) {
+                console.error("Error in Example 2:", e);
+            }
+
+            // Example 3: Text and Shapes
+            try {
+                console.log("Creating Example 3...");
+                create_svg_element("example3", 400, 280);
+                
+                // Background
+                add_svg_rect("rsdomlib-svg", 0, 0, 400, 280, "#f5f5f5", "#ddd", 1);
+                
+                // Title box
+                add_svg_rect("rsdomlib-svg", 30, 30, 340, 80, "#34495e", "#2c3e50", 2);
+                add_svg_text("rsdomlib-svg", 200, 70, "WASM SVG Demo", "white", 28);
+                
+                // Info circle
+                add_svg_circle("rsdomlib-svg", 80, 180, 50, "#1abc9c", "#16a085", 2);
+                add_svg_text("rsdomlib-svg", 80, 185, "Rust", "#fff", 18);
+                
+                // Info circle
+                add_svg_circle("rsdomlib-svg", 200, 180, 50, "#e67e22", "#d35400", 2);
+                add_svg_text("rsdomlib-svg", 200, 185, "WASM", "#fff", 18);
+                
+                // Info circle
+                add_svg_circle("rsdomlib-svg", 320, 180, 50, "#3498db", "#2980b9", 2);
+                add_svg_text("rsdomlib-svg", 320, 185, "Web", "#fff", 18);
+                
+                // Bottom text
+                add_svg_text("rsdomlib-svg", 200, 260, "Created from Rust + WebAssembly", "#666", 14);
+            } catch (e) {
+                console.error("Error in Example 3:", e);
+            }
+        }
+
+        main().catch(console.error);
+    </script>
+</body>
+</html>
