@@ -144,7 +144,7 @@ pub fn set_zone_time(elem_id: String, zone_str: String) -> Result<(), JsValue> {
             }
             
             // Set hour hand rotation
-            match elem("thr") {
+            match get_element("thr") {
                 Ok(el) => {
                     if let Err(e) = el.set_attribute("transform", &format!("rotate({})", hr_angle)) {
                         web_sys::console::log_1(&format!("Error setting thr transform: {:?}", e).into());

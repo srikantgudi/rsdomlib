@@ -1,0 +1,7 @@
+{
+  "rewrites": [
+    { "source": "/rsdomlib_bg.wasm", "destination": "/pkg/rsdomlib_bg.wasm" },
+    { "source": "/rsdomlib.js", "destination": "/pkg/rsdomlib.js" },
+    { "source": "/(.*)", "destination": "/index.html" }
+  ]
+}
